@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  nginx:
+    build: nginx:alpine
+    ports: 
+      - "80:80"
+    volumes:
+      - app:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    restart: always
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - reverse-proxy
+
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    networks:
+      - reverse-proxy
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    networks:
+      - reverse-proxy
+
+volumes:
+  app:
+    driver: local
+
+networks:
+  reverse-proxy:
